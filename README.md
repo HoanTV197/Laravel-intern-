@@ -15,3 +15,5 @@ DB_PASSWORD=
 
 7. php artisan serve
 
+Link Postman collection:
+https://documenter.getpostman.com/view/33180377/2sA2rCUgwu#eabc01d9-40c0-4c7b-97c3-5d89a0eb3fc1
