@@ -26,7 +26,6 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
-            // Add validation rules for other fields
         ]);
 
         $product = Product::create($request->all());
