@@ -1,21 +1,30 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Models\Category;
+use App\Main\Services\CategoryService;
+use App\Http\Controllers\Controller;
+
 
 class CategoryController extends Controller
 {
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     public function index()
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
         return response()->json($categories);
     }
 
     public function show($id)
     {
-        $category = Category::find($id);
+        $category = $this->categoryService->getCategoryById($id);
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
@@ -28,8 +37,7 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories|max:255',
         ]);
 
-        $category = Category::create($request->all());
-
+        $category = $this->categoryService->createCategory($request->all());
         return response()->json($category, 201);
     }
 
@@ -39,25 +47,19 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories|max:255',
         ]);
 
-        $category = Category::find($id);
+        $category = $this->categoryService->updateCategory($id, $request->all());
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
-
-        $category->update($request->all());
-
         return response()->json($category, 200);
     }
 
     public function destroy($id)
     {
-        $category = Category::find($id);
+        $category = $this->categoryService->deleteCategory($id);
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
-
-        $category->delete();
-
         return response()->json(null, 204);
     }
 }
