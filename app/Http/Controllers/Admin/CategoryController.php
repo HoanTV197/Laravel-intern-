@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Main\Services\CategoryService;
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -18,48 +19,32 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = $this->categoryService->getAllCategories();
-        return response()->json($categories);
+         $categoryService = new CategoryService();
+         return $categoryService->getAllCategories();
     }
 
     public function show($id)
     {
-        $category = $this->categoryService->getCategoryById($id);
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-        return response()->json($category);
+        $categoryService = new CategoryService();
+        return $categoryService->getCategoryById($id);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|unique:categories|max:255',
-        ]);
-
-        $category = $this->categoryService->createCategory($request->all());
-        return response()->json($category, 201);
+    public function store(StoreCategoryRequest $request)
+    {       
+        $categoryService = new CategoryService();
+        return $categoryService->createCategory($request->validated());
+        
     }
-
-    public function update(Request $request, $id)
+    
+    public function update(UpdateCategoryRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'required|unique:categories|max:255',
-        ]);
-
-        $category = $this->categoryService->updateCategory($id, $request->all());
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-        return response()->json($category, 200);
+        $categoryService = new CategoryService();
+        return $categoryService->updateCategory($id, $request->validated());
     }
 
     public function destroy($id)
     {
-        $category = $this->categoryService->deleteCategory($id);
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-        return response()->json(null, 204);
+        $categoryService = new CategoryService();
+        return $categoryService->deleteCategory($id);
     }
 }

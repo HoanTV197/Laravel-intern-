@@ -2,7 +2,7 @@
 
 namespace App\Main\Helpers;
 
-class  Response{
+class Response{
     const RESPONSE_STATUS_SUCCESS = 1;
     const RESPONSE_STATUS_FAIL = 0;
 

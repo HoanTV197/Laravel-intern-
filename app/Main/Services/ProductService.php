@@ -6,17 +6,25 @@ use App\Models\Product;
 use App\Main\Helpers\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+
+
 class ProductService
 {
+    private $response;
+
+    public function __construct()
+    {
+        $this->response = new Response();
+    }
+
+
     public function getAllProducts()
     {
         try {
             $products = Product::all();
-            $response = new Response();
-            return $response->responseJsonSuccess($products, 'Products retrieved successfully');
+            return $this->response->responseJsonSuccess($products, 'Get all products successfully');
         } catch (\Exception $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Failed to retrieve products');
+            return $this->response->responseJsonFail('Failed to retrieve products');
         }
     }
 
@@ -24,26 +32,21 @@ class ProductService
     {
         try {
             $product = Product::findOrFail($id);
-            $response = new Response();
-            return $response->responseJsonSuccess($product, 'Product retrieved successfully');
+            return $this->response->responseJsonSuccess($product, 'Get product by id successfully');
         } catch (ModelNotFoundException $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Product not found', 404);
+            return $this->response->responseJsonFail('Product not found', 404);
         } catch (\Exception $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Failed to retrieve product');
+            return $this->response->responseJsonFail('Failed to retrieve product');
         }
     }
-
     public function createProduct($data)
     {
         try {
             $product = Product::create($data);
-            $response = new Response();
-            return $response->responseJsonSuccess($product, 'Product created successfully');
+            return $this->response->responseJsonSuccess($product, 'Product created successfully');
         } catch (\Exception $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Failed to create product');
+
+            return $this->response->responseJsonFail('Failed to create product');
         }
     }
 
@@ -52,14 +55,11 @@ class ProductService
         try {
             $product = Product::findOrFail($id);
             $product->update($data);
-            $response = new Response();
-            return $response->responseJsonSuccess($product, 'Product updated successfully');
+            return $this->response->responseJsonSuccess($product, 'Product updated successfully');
         } catch (ModelNotFoundException $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Product not found', 404);
+            return $this->response->responseJsonFail('Product not found', 404);
         } catch (\Exception $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Failed to update product');
+            return $this->response->responseJsonFail('Failed to update product');
         }
     }
 
@@ -68,14 +68,11 @@ class ProductService
         try {
             $product = Product::findOrFail($id);
             $product->delete();
-            $response = new Response();
-            return $response->responseJsonSuccess(null, 'Product deleted successfully');
+            return $this->response->responseJsonSuccess(null, 'Product deleted successfully');
         } catch (ModelNotFoundException $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Product not found', 404);
+            return $this->response->responseJsonFail('Product not found', 404);
         } catch (\Exception $e) {
-            $response = new Response();
-            return $response->responseJsonFail('Failed to delete product');
+            return $this->response->responseJsonFail('Failed to delete product');
         }
     }
 }
