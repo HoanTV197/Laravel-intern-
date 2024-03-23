@@ -19,8 +19,10 @@ class CategoryController extends Controller
 
     public function index()
     {
-         $categoryService = new CategoryService();
-         return $categoryService->getAllCategories();
+         return $this->baseAction(function() {
+            $data = $this->categoryService->getAllCategories();
+            return $data;
+        }, __("Get category success"), __("Get category error"));
     }
 
     public function show($id)

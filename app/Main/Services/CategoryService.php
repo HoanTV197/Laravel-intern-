@@ -4,25 +4,24 @@ namespace App\Main\Services;
 
 use App\Models\Category;
 use App\Main\Helpers\Response;
+use App\Main\Repositories\CategoryRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+use function App\Main\Helpers\responseJsonSuccess;
 
 class CategoryService
 {
     protected $response;
+    protected $categoryRepository;
 
-    public function __construct()
+    public function __construct(CategoryRepository $categoryRepository)
     {
-        $this->response = new Response();
+        $this->categoryRepository = $categoryRepository;
     }
 
     public function getAllCategories()
     {
-        try {
-            $categories = Category::all();
-            return $this->response->responseJsonSuccess($categories, 'Get all categories successfully');
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to retrieve categories');
-        }
+        return $this->categoryRepository->all();
     }
 
     public function getCategoryById($id)
