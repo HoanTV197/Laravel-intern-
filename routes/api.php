@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController;
+
 
 
 
@@ -25,4 +28,8 @@ Route::middleware(['auth:sanctum',\App\Http\Middleware\AuthUser::class])->group(
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-Route::post('/orders/place', [OrderController::class, 'placeOrder']);
+Route::post('/orders/submit', [OrderController::class, 'submitOrder']);
+
+Route::post('/cart/submit', [CartController::class,'submitCart']);
+
+
