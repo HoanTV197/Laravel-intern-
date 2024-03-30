@@ -18,35 +18,44 @@ class CategoryController extends Controller
     }
 
     public function index()
-    {
-         return $this->baseAction(function() {
-            $data = $this->categoryService->getAllCategories();
+    {   
+        $perPage = 10;
+         return $this->baseAction(function() use ($perPage){
+            $data = $this->categoryService->getAllCategories($perPage);
             return $data;
         }, __("Get category success"), __("Get category error"));
     }
 
     public function show($id)
     {
-        $categoryService = new CategoryService();
-        return $categoryService->getCategoryById($id);
+        return $this->baseAction(function() use ($id) {
+            $data = $this->categoryService->getCategoryById($id);
+            return $data;
+        }, __("Get category success"), __("Get category error"));
     }
 
     public function store(StoreCategoryRequest $request)
     {       
-        $categoryService = new CategoryService();
-        return $categoryService->createCategory($request->validated());
+        return $this->baseActionTransaction(function() use ($request) {
+            $data = $this->categoryService->createCategory($request->validated());
+            return $data;
+        }, __("Create category success"), __("Create category error"));
         
     }
     
     public function update(UpdateCategoryRequest $request, $id)
     {
-        $categoryService = new CategoryService();
-        return $categoryService->updateCategory($id, $request->validated());
+        return $this->baseActionTransaction(function() use ($request, $id) {
+            $data = $this->categoryService->updateCategory($id, $request->validated());
+            return $data;
+        }, __("Update category success"), __("Update category error"));
     }
 
     public function destroy($id)
     {
-        $categoryService = new CategoryService();
-        return $categoryService->deleteCategory($id);
+        return $this->baseActionTransaction(function() use ($id) {
+            $data = $this->categoryService->deleteCategory($id);
+            return $data;
+        }, __("Delete category success"), __("Delete category error"));
     }
 }

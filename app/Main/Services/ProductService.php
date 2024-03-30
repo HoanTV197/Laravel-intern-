@@ -5,74 +5,42 @@ namespace App\Main\Services;
 use App\Models\Product;
 use App\Main\Helpers\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Main\Repositories\ProductRepository;
 
 
 
 class ProductService
 {
-    private $response;
+    protected $response;
+    protected $productRepository;
 
-    public function __construct()
+
+    public function __construct(ProductRepository $productRepository)
     {
-        $this->response = new Response();
+        $this->productRepository = $productRepository;
     }
 
-
-    public function getAllProducts()
+    public function getAllProducts($perPage = 10)
     {
-        try {
-            $products = Product::all();
-            return $this->response->responseJsonSuccess($products, 'Get all products successfully');
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to retrieve products');
-        }
+        return $this->productRepository->paginateWithCategories($perPage);
     }
 
     public function getProductById($id)
     {
-        try {
-            $product = Product::findOrFail($id);
-            return $this->response->responseJsonSuccess($product, 'Get product by id successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Product not found', 404);
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to retrieve product');
-        }
+        return $this->productRepository->find($id);
     }
     public function createProduct($data)
     {
-        try {
-            $product = Product::create($data);
-            return $this->response->responseJsonSuccess($product, 'Product created successfully');
-        } catch (\Exception $e) {
-
-            return $this->response->responseJsonFail('Failed to create product');
-        }
+        return $this->productRepository->create($data);
     }
 
     public function updateProduct($id, $data)
     {
-        try {
-            $product = Product::findOrFail($id);
-            $product->update($data);
-            return $this->response->responseJsonSuccess($product, 'Product updated successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Product not found', 404);
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to update product');
-        }
+        return $this->productRepository->updateOrCreate(['id' => $id], $data);
     }
 
     public function deleteProduct($id)
     {
-        try {
-            $product = Product::findOrFail($id);
-            $product->delete();
-            return $this->response->responseJsonSuccess(null, 'Product deleted successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Product not found', 404);
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to delete product');
-        }
+        return $this->productRepository->delete($id);
     }
 }

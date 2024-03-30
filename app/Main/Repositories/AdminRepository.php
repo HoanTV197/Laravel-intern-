@@ -95,6 +95,6 @@ class AdminRepository extends BaseRepository
 
     public function clear(string $name)
     {
-        clear($name);
+        $this->clear($name);
     }
 }

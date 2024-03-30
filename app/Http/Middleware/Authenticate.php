@@ -3,7 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use App\Main\Helpers\Response;
+use const App\Main\Helpers\HTTP_CODE_UNAUTHORIZED;
+use function App\Main\Helpers\responseJsonFail;
 
 class Authenticate extends Middleware
 {
@@ -13,7 +14,7 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (!$request->expectsJson()) {
-            return (new \App\Main\Helpers\Response)->responseJsonFail("Not authenticated",Response::HTTP_CODE_UNAUTHORIZED);
+            return responseJsonFail("Not authenticated", HTTP_CODE_UNAUTHORIZED);
         }
 
     }

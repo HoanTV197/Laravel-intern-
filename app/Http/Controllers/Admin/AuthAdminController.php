@@ -20,10 +20,11 @@ class AuthAdminController extends Controller
     public function login(Request $request)
     {
 
-        $userName = $request->user_name;
+        
+        $email = $request->email;
         $password = $request->password;
 
-        return $this->authService->login($userName, $password);
+        return $this->authService->login($email, $password);
     }
 
     public function me(Request $request)

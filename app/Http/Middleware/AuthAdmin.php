@@ -6,6 +6,8 @@ use App\Main\Helpers\Response;
 use App\Main\Repositories\AdminRepository;
 use Closure;
 use Illuminate\Http\Request;
+use function App\Main\Helpers\responseJsonFail;
+use const App\Main\Helpers\HTTP_CODE_UNAUTHORIZED;
 
 class AuthAdmin
 {
@@ -13,11 +15,11 @@ class AuthAdmin
     {
         $adminRepository = new AdminRepository();
 
-        $userName = auth()->user()->user_name;
-        $user = $adminRepository->findOne('user_name', $userName);
+        $email = auth()->user()->email;
+        $user = $adminRepository->findOne('email',$email );
 
         if (empty($user)) {
-            return (new Response)->responseJsonFail("Not authenticated",Response:: HTTP_CODE_UNAUTHORIZED);
+            return responseJsonFail("Not authenticated", HTTP_CODE_UNAUTHORIZED);
         }
 
         return $next($request);

@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CartController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Api\CartController;
+
 
 
 
@@ -30,6 +31,13 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 
 Route::post('/orders/submit', [OrderController::class, 'submitOrder']);
 
-Route::post('/cart/submit', [CartController::class,'submitCart']);
+// cart
+
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+
+
 
 

@@ -19,54 +19,28 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function getAllCategories()
+    public function getAllCategories($perPage)
     {
-        return $this->categoryRepository->all();
+        return $this->categoryRepository->paginate($perPage);
     }
 
     public function getCategoryById($id)
     {
-        try {
-            $category = Category::findOrFail($id);
-            return $this->response->responseJsonSuccess($category, 'Get category by id successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Category not found', Response::HTTP_CODE_UNAUTHORIZED);
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to retrieve category');
-        }
+       return $this->categoryRepository->find($id);
     }
 
     public function createCategory($data)
     {
-        try {
-            $category = Category::create($data);
-            return $this->response->responseJsonSuccess($category, 'Category created successfully');
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to create category');
-        }
+        return $this->categoryRepository->create($data);
     }
 
     public function updateCategory($id, $data)
     {
-        try {
-            $category = Category::findOrFail($id);
-            $category->update($data);
-            return $this->response->responseJsonSuccess($category, 'Category updated successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Category not found', 404);
-        } catch (\Exception $e) {
-            return $this->response->responseJsonFail('Failed to update category');
-        }
+        return $this->categoryRepository->updateOrCreate(['id' => $id], $data);
     }
     public function deleteCategory($id)
     {
-        try {
-            $category = Category::findOrFail($id);
-            $category->delete();
-            return $this->response->responseJsonSuccess(null, 'Category deleted successfully');
-        } catch (ModelNotFoundException $e) {
-            return $this->response->responseJsonFail('Category not found', 404);
-        }
+        return $this->categoryRepository->delete($id);  
     }
     
 }

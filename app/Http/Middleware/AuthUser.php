@@ -2,24 +2,39 @@
 
 namespace App\Http\Middleware;
 
-use App\Main\Helpers\Response;
+
 use App\Main\Repositories\AdminRepository;
 use App\Main\Repositories\UserRepository;
 use Closure;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use const App\Main\Helpers\HTTP_CODE_UNAUTHORIZED;
+use function App\Main\Helpers\responseJsonFail;
+
+    
+
 class AuthUser
-{
+{   
+    
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function handle(Request $request, Closure $next)
     {
-        $adminRepository = new UserRepository();
+        if (!Auth::check()) {
+            return responseJsonFail("Not authenticated", HTTP_CODE_UNAUTHORIZED);
+        }
 
-        $email = auth()->user()->email;
-        $user = $adminRepository->findOne('email', $email);
+        $email = Auth::user()->email;
+        $user = $this->userRepository->findOne('email', $email);
 
         if (empty($user)) {
-
-            return (new Response)->responseJsonFail("Not authenticated",Response:: HTTP_CODE_UNAUTHORIZED);
+            return responseJsonFail("Not authenticated", HTTP_CODE_UNAUTHORIZED);
         }
 
         return $next($request);

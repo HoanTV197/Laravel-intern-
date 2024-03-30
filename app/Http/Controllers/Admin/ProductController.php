@@ -9,41 +9,51 @@ use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
-    
+
     protected $productService;
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
     }
-    
+
     public function index()
-    {
-        $productService = new ProductService();
-        return $productService->getAllProducts();
+    {   
+        $perPage = 10;
+        return $this->baseAction(function () use ($perPage) {
+            $data = $this->productService->getAllProducts($perPage);
+            return $data;
+        }, __("Get product success"), __("Get product error"));
     }
 
     public function show($id)
     {
-        $productService = new ProductService();
-        return $productService->getProductById($id);
+        return $this->baseAction(function () use ($id) {
+            $data = $this->productService->getProductById($id);
+            return $data;
+        }, __("Get product success"), __("Get product error"));
     }
-    
+
     public function store(StoreProductRequest $request)
     {
-        $productService = new ProductService();
-        return $productService->createProduct($request->validated());
+        return $this->baseActionTransaction(function () use ($request) {
+            $data = $this->productService->createProduct($request->validated());
+            return $data;
+        }, __("Create product success"), __("Create product error"));
     }
 
     public function update(UpdateProductRequest $request, $id)
     {
-        $productService = new ProductService();
-        return $productService->updateProduct($id, $request->validated());
+        return $this->baseActionTransaction(function () use ($request, $id) {
+            $data = $this->productService->updateProduct($id, $request->validated());
+            return $data;
+        }, __("Update product success"), __("Update product error"));
     }
 
     public function destroy($id)
-{
-    $productService = new ProductService();
-    return $productService->deleteProduct($id);
-    
-}
+    {
+        return $this->baseActionTransaction(function () use ($id) {
+            $data = $this->productService->deleteProduct($id);
+            return $data;
+        }, __("Delete product success"), __("Delete product error"));
+    }
 }

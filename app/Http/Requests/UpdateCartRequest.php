@@ -4,16 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProductRequest extends FormRequest
+class UpdateCartRequest extends FormRequest
 {
-
 
     public function rules()
     {
         return [
-            'name' => "required|max:255|unique:products,name,{$this->product}",
-
-            
+            'quantity' => 'required|integer|min:0'
         ];
     }
-}
+
+}    
