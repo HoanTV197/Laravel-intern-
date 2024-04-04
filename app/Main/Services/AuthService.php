@@ -10,10 +10,8 @@ use Illuminate\Support\Facades\Mail;
 use function PHPUnit\Framework\isEmpty;
 use const App\Main\Helpers\RESPONSE_STATUS_SUCCESS;
 use const App\Main\Helpers\HTTP_CODE_SUCCESS;
-use App\Main\Helpers\Response;
-
-
-
+use function App\Main\Helpers\responseJsonFail;
+use function App\Main\Helpers\responseJsonSuccess;
 
 class AuthService
 {
@@ -39,10 +37,10 @@ class AuthService
         $user = $this->adminRepository->findOne('email', $userName);
 
         if (empty($user)) {
-            return $this->response->responseJsonFail('User does not exist');
+            return responseJsonFail('User does not exist');
         }
         if (!Hash::check($password, $user->password)) {
-            return $this->response->responseJsonFail('Password incorrect');
+            return responseJsonFail('Password incorrect');
         }
 
         $token = $user->createToken('authToken')->plainTextToken;
@@ -50,8 +48,6 @@ class AuthService
 
         return response(
             [
-                // ...
-
                 'status' => RESPONSE_STATUS_SUCCESS,
                 'data' => [
                     'access_token' => $token,
@@ -60,19 +56,19 @@ class AuthService
 
                 ],
 
-            ],
-            HTTP_CODE_SUCCESS
-        );
+            ]
+            ,HTTP_CODE_SUCCESS);
     }
+
 
     public function logout()
     {
         if (\auth()->check()) {
 
             auth()->user()->tokens()->delete();
-            return $this->response->responseJsonSuccess('Logout success');
+            return responseJsonSuccess('Logout success');
         } else {
-            return $this->response->responseJsonFail('User does not exist');
+            return responseJsonFail('User does not exist');
         }
     }
 
@@ -83,10 +79,10 @@ class AuthService
 
 
         if (empty($user)) {
-            return $this->response->responseJsonFail('User does not exist');
+            return responseJsonFail('User does not exist');
         }
         if (!Hash::check($password, $user->password)) {
-            return $this->response->responseJsonFail('Password incorrect');
+            return responseJsonFail('Password incorrect');
         }
 
         $token = $user->createToken('authToken')->plainTextToken;
@@ -97,8 +93,6 @@ class AuthService
 
         return response(
             [
-                // ...
-
                 'status' => RESPONSE_STATUS_SUCCESS,
                 'data' => [
                     'access_token' => $token,
@@ -107,10 +101,10 @@ class AuthService
 
                 ],
 
-            ],
-            HTTP_CODE_SUCCESS
-        );
+            ]
+            , HTTP_CODE_SUCCESS);
     }
+
 
 
     public function sendOtp($email)
@@ -128,29 +122,29 @@ class AuthService
         Mail::raw((string)$otp, function ($message) use ($email) {
             $message->to($email)->subject('Verify OTP');
         });
-        return $this->response->responseJsonSuccess('Send email success', HTTP_CODE_SUCCESS);
+        return responseJsonSuccess('Send email success', HTTP_CODE_SUCCESS);
     }
 
     public function me($user)
     {
-        return $this->response->responseJsonSuccess($user, 'Get detail user success');
+        return responseJsonSuccess($user, 'Get detail user success');
     }
 
     public function verify($email, $_otp)
     {
         $otp = $this->otpRepository->findOneLast('email', $email);
         if (empty($otp)) {
-            return $this->response->responseJsonFail('Email does not exist');
+            return responseJsonFail('Email does not exist');
         }
         if ($otp->is_used) {
-            return $this->response->responseJsonFail('OTP has been used');
+            return responseJsonFail('OTP has been used');
         }
         if ($otp->created_at->addMinutes(5) < now()) {
-            return $this->response->responseJsonFail('OTP has expired');
+            return responseJsonFail('OTP has expired');
         }
 
         if ($otp->otp != $_otp) {
-            return $this->response->responseJsonFail('OTP is incorrect');
+            return responseJsonFail('OTP is incorrect');
         }
         $otp->is_used = true;
         $otp->save();
@@ -161,11 +155,11 @@ class AuthService
     {
         $user = $this->userRepository->findOne('email', $email);
         if (empty($user)) {
-            return $this->response->responseJsonFail('Email does not exist');
+            return responseJsonFail('Email does not exist');
         }
         $user->status = 1;
         $user->save();
-        return $this->response->responseJsonSuccess('Verify email success');
+        return responseJsonSuccess('Verify email success');
     }
 
     public function changePass($email, $newPass, $pass = null)
@@ -174,14 +168,14 @@ class AuthService
         $user = $this->userRepository->findOne('email', $email);
 
         if (empty($user)) {
-            return $this->response->responseJsonFail('User does not exist');
+            return responseJsonFail('User does not exist');
         }
         if (!isEmpty($pass) && !Hash::check($pass, $user->password)) {
-            return $this->response->responseJsonFail('Current password is not correct');
+            return responseJsonFail('Current password is not correct');
         }
         $user->password = Hash::make($newPass);
         $user->save();
-        return $this->response->responseJsonSuccess('Change password success');
+        return responseJsonSuccess('Change password success');
     }
 
     private function generateOtp()

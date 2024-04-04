@@ -3,6 +3,7 @@
 namespace App\Main\Services;
 
 use App\Main\Repositories\CartRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CartService
@@ -14,67 +15,33 @@ class CartService
         $this->cartRepository = $cartRepository;
     }
 
-    /**
-     * Lấy thông tin giỏ hàng của người dùng dựa trên session_id.
-     *
-     * @param string $sessionId
-     * @return mixed
-     */
-    public function getCartBySessionId($sessionId)
+    public function addToCart($productId, $quantity)
     {
-        return $this->cartRepository->findBySessionId($sessionId);
+        $userId = Auth::id();
+        return $this->cartRepository->addToCart($userId, $productId, $quantity);
     }
 
-    /**
-     * Thêm sản phẩm vào giỏ hàng hoặc cập nhật số lượng nếu sản phẩm đã tồn tại dựa trên session_id.
-     *
-     * @param string $sessionId
-     * @param int $productId
-     * @param int $quantity
-     * @return mixed
-     */
-    public function addToCart($sessionId, $productId, $quantity)
+    public function updateCartItem($productId, $quantity)
     {
-        return DB::transaction(function () use ($sessionId, $productId, $quantity) {
-            return $this->cartRepository->addToCart($sessionId, $productId, $quantity);
-        });
+        $userId = Auth::id();
+        return $this->cartRepository->updateCartItem($userId, $productId, $quantity);
     }
 
-    /**
-     * Cập nhật số lượng sản phẩm trong giỏ hàng dựa trên session_id.
-     *
-     * @param string $sessionId
-     * @param int $productId
-     * @param int $quantity
-     * @return mixed
-     */
-    public function updateCartQuantity($sessionId, $productId, $quantity)
+    public function removeFromCart($productId)
     {
-        return DB::transaction(function () use ($sessionId, $productId, $quantity) {
-            return $this->cartRepository->updateCartQuantity($sessionId, $productId, $quantity);
-        });
+        $userId = Auth::id();
+        return $this->cartRepository->removeFromCart($userId, $productId);
     }
 
-    /**
-     * Xoá một sản phẩm khỏi giỏ hàng dựa trên session_id.
-     *
-     * @param string $sessionId
-     * @param int $productId
-     * @return mixed
-     */
-    public function removeItemFromCart($sessionId, $productId)
+    public function clearCart()
     {
-        return $this->cartRepository->removeItemFromCart($sessionId, $productId);
+        $userId = Auth::id();
+        return $this->cartRepository->clearCart($userId);
     }
 
-    /**
-     * Tính tổng giá trị giỏ hàng của một session.
-     *
-     * @param string $sessionId
-     * @return float
-     */
-    public function calculateCartTotal($sessionId)
+    public function getUserCart()
     {
-        return $this->cartRepository->getCartTotal($sessionId);
+        $userId = Auth::id();
+        return $this->cartRepository->getUserCart($userId);
     }
 }

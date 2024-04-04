@@ -20,7 +20,20 @@ const HTTP_CODE_UNAUTHORIZED = 401;
             HTTP_CODE_SUCCESS
         );
     }
-    
+    function responseJsonSuccessPaginate($data = [], $paginate = [],$message = '')
+    {
+        return response(
+            [
+                'status' => RESPONSE_STATUS_SUCCESS,
+                'message' => $message,
+                'data' => $data,
+                'paginate' => $paginate,
+
+            ]
+            ,HTTP_CODE_SUCCESS
+        );
+    }
+
     function responseJsonFail($message = '', $httpCode = HTTP_CODE_SUCCESS, $errors = [])
     {
         return response(
@@ -42,6 +55,22 @@ const HTTP_CODE_UNAUTHORIZED = 401;
             ],
             $httpCode
         );
+    }
+
+    function paginate($total, $limit, $page)
+    {
+        $totalPage = ceil($total / $limit);
+        $nextPage = $page + 1;
+        $prevPage = $page - 1;
+        $paginate = [
+            'total' => $total,
+            'total_page' => $totalPage,
+            'limit' => $limit,
+            'page' => $page,
+            'next_page' => $nextPage,
+            'prev_page' => $prevPage,
+        ];
+        return $paginate;
     }
     
 

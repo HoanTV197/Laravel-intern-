@@ -6,6 +6,10 @@ use App\Main\Repositories\AdminRepository;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use function PHPUnit\Framework\isEmpty;
+use function App\Main\Helpers\responseJsonFail;
+use function App\Main\Helpers\responseJsonSuccess;
+use function App\Main\Helpers\responseJsonSuccessPaginate;
+use function App\Main\Helpers\paginate;
 
 class AdminService
 {
@@ -29,22 +33,22 @@ class AdminService
         $result = $this->repository->getAll($data);
         $message = $result['message'];
         if (isEmpty($message) && $message != 'success') {
-            return (new \App\Main\Helpers\Response)->responseJsonFail($message);
+            return responseJsonFail($message);
         }
         $total = $result['total'];
         $limit = $data['limit'];
         $page = $data['page'];
-        $paginate = (new \App\Main\Helpers\Response)->paginate($total, $limit, $page);
-        return (new \App\Main\Helpers\Response)->responseJsonSuccessPaginate($result['data'], $paginate);
+        $paginate = paginate($total, $limit, $page);
+        return responseJsonSuccessPaginate($result['data'], $paginate);
     }
 
     public function getById($id)
     {
         $data = $this->repository->getById($id);
         if ($data) {
-            return (new \App\Main\Helpers\Response)->responseJsonSuccess($data);
+            return responseJsonSuccess($data);
         }
-        return (new \App\Main\Helpers\Response)->responseJsonFail(false);
+        return responseJsonFail(false);
     }
 
 
@@ -65,12 +69,12 @@ class AdminService
             DB::rollBack();
             error_log($e->getMessage());
             if ($e->getCode() == 23000) {
-                return (new \App\Main\Helpers\Response)->responseJsonFail("The email has already been taken. ");
+                return responseJsonFail("The email has already been taken. ");
             }
-            return (new \App\Main\Helpers\Response)->responseJsonFail(false);
+            return responseJsonFail(false);
         }
 
-        return (new \App\Main\Helpers\Response)->responseJsonSuccess($result);
+        return responseJsonSuccess($result);
     }
 
     private function createData($data)
@@ -83,7 +87,7 @@ class AdminService
     {
         $user = $this->repository->findOne('id', $data['id']);
         if (empty($user)) {
-            return (new \App\Main\Helpers\Response)->responseJsonFail(false);
+            return responseJsonFail(false);
         }
         foreach ($data['data'] as $key => $value) {
 
@@ -114,7 +118,7 @@ class AdminService
     public function deleteUser($id)
     {
         $result = $this->repository->delete($id);
-        return (new \App\Main\Helpers\Response)->responseJsonSuccess($result);
+        return responseJsonSuccess($result);
 
     }
 }
