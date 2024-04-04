@@ -19,30 +19,26 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = $this->orderService->getAllOrders();
-        return response()->json($orders);
+        return $this->baseAction(function () {
+            $data = $this->orderService->getAllOrders();
+            return $data;
+        }, __("Get order success"), __("Get order error"));
     }
 
     public function show($id)
     {
-        try {
-            $order = $this->orderService->getOrderById($id);
-            return response()->json($order);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Order not found.'], Response::HTTP_NOT_FOUND);
-        }
+        return $this->baseAction(function () use ($id) {
+            $data = $this->orderService->getOrderById($id);
+            return $data;
+        }, __("Get order success"), __("Get order error"));
     }
 
     public function updateStatus(Request $request, $id)
     {
-        try {
-            if ($this->orderService->updateOrderStatus($id, $request->status)) {
-                return response()->json(['message' => 'Order status has been updated.'], Response::HTTP_OK);
-            }
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Order not found.'], Response::HTTP_NOT_FOUND);
-        }
-        
-        return response()->json(['message' => 'Order update failed.']);
+        $status = $request->status;
+        return $this->baseActionTransaction(function () use ($status,$id ) {
+            $data = $this->orderService->updateOrderStatus($status, $id);
+            return $data;
+        }, __("Update order status success"), __("Update order status error"));
     }
 }

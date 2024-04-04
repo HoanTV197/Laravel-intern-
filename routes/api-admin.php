@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\CustomerController;
-
 
 Route::post('/auth/login', [AuthAdminController::class, 'login']);
 Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthAdmin::class])->group(function () {
@@ -32,6 +30,6 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthAdmin::class])->grou
     //Orders
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
-    Route::post('/orders/{orderId}/status', [OrderController::class, 'updateStatus']);
+    Route::post('/orders/status/{id}', [OrderController::class, 'updateStatus']);
 
 });

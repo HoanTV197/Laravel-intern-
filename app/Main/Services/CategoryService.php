@@ -14,7 +14,6 @@ use function App\Main\Helpers\responseJsonFail;
 
 class CategoryService
 {
-    protected $response;
     protected $categoryRepository;
 
     public function __construct(CategoryRepository $categoryRepository)
