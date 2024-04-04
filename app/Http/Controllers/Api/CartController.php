@@ -4,87 +4,79 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Main\Services\CartService;
-use App\Models\Cart;
-use App\Models\Order;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreCartItemRequest;
+use App\Http\Requests\UpdateCartItemRequest;
 use Illuminate\Support\Facades\Auth;
+
 class CartController extends Controller
 
-
 {
- // Thêm sản phẩm vào giỏ hàng
- public function addToCart(Request $request) {
-    $cart = new Cart();
-    $cart->user_id = Auth::id();
-    $cart->product_id = $request->product_id;
-    $cart->quantity = $request->quantity;
-    $cart->save();
+    protected $cartService;
 
-    return response()->json(['message' => 'Product added to cart successfully!']);
-}
-
-// Hiển thị giỏ hàng của người dùng
-public function showCart($userId) {
-    $cartItems = Cart::where('user_id', $userId)->get();
-    return response()->json($cartItems);
-}
-
-// Cập nhật số lượng sản phẩm trong giỏ hàng
-public function updateCart(Request $request, $cartId) {
-    $cart = Cart::find($cartId);
-    $cart->quantity = $request->quantity;
-    $cart->save();
-
-    return response()->json(['message' => 'Cart updated successfully!']);
-}
-
-// Xóa sản phẩm khỏi giỏ hàng
-public function removeFromCart($cartId) {
-    $cart = Cart::find($cartId);
-    $cart->delete();
-
-    return response()->json(['message' => 'Product removed from cart successfully!']);
-}
-
-// Xem thông tin giỏ hàng và tính toán tổng giá
-public function viewCartAndCalculateTotal($userId) {
-    $cartItems = Cart::with('product')->where('user_id', $userId)->get();
-    
-    $totalPrice = 0;
-    foreach ($cartItems as $item) {
-        $totalPrice += $item->product->price * $item->quantity;
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
     }
 
-    return response()->json([
-        'cart_items' => $cartItems,
-        'total_price' => $totalPrice
-    ]);
-}
+    public function index()
+    {   
+        return $this->baseAction(function() {
+            $data = $this->cartService->getByUserId();
+            return $data;
+        }, __("Get cart success"), __("Get cart error"));
+    }
 
-// Submit giỏ hàng và tạo đơn hàng
-public function submitCart(Request $request) {
-    $userId = Auth::id();
-    $cartItems = Cart::where('user_id', $userId)->get();
+    public function show()
+    {
+        $userId = Auth::id(); // Lấy ID của người dùng hiện tại
     
-    $totalPrice = 0;
-    foreach ($cartItems as $item) {
-        $product = Product::find($item->product_id);
-        $totalPrice += $product->price * $item->quantity;
+        return $this->baseAction(function() use ($userId) {
+            $data = $this->cartService->getCartItemsByUserId();
+            return $data;
+        }, __("Get cart items success"), __("Get cart items error"));
     }
     
-    $order = new Order();
-    $order->customer_id = $userId;
-    $order->order_date = now();
-    $order->total_price = $totalPrice;
-    $order->status = 'pending';
-    $order->save();
 
-    // Xóa giỏ hàng sau khi đặt hàng
-    Cart::where('user_id', $userId)->delete();
+    public function store(StoreCartItemRequest $request)
+    {       
+        return $this->baseActionTransaction(function() use ($request) {
+            $data = $this->cartService->addToCart($request->validated());
+            return $data;
+        }, __("Add to cart success"), __("Add to cart error"));
+        
+    }
+    
+    public function update(UpdateCartItemRequest $request, $id)
+    {
+        return $this->baseActionTransaction(function() use ($request, $id) {
+            $data = $this->cartService->updateQuantity($id, $request->validated()['quantity']);
+            return $data;
+        }, __("Update cart item success"), __("Update cart item error"));
+    }
 
-    return response()->json(['message' => 'Order placed successfully!', 'order_id' => $order->id]);
-}
+    public function destroy($id)
+    {
+        return $this->baseActionTransaction(function() use ($id) {
+            $data = $this->cartService->removeFromCart($id);
+            return $data;
+        }, __("Remove from cart success"), __("Remove from cart error"));
+    }
+
+    public function viewCartAndCalculateTotal()
+    {
+        return $this->baseAction(function() {
+            $data = $this->cartService->viewCartAndCalculateTotal();
+            return $data;
+        }, __("View cart and calculate total success"), __("View cart and calculate total error"));
+    }
+
+    public function submitCart()
+    {
+        return $this->baseActionTransaction(function() {
+            $order = $this->cartService->submitCart();
+            return $order;
+        }, __("Submit cart success"), __("Submit cart error"));
+    }
 }
 
 

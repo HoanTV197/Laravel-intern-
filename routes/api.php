@@ -24,12 +24,13 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthUser::class])->group
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    Route::post('/cart/add', [CartController::class, 'addToCart']);
-    Route::get('/cart/{userId}', [CartController::class, 'showCart']);
-    Route::put('/cart/update/{cartId}', [CartController::class, 'updateCart']);
-    Route::delete('/cart/remove/{cartId}', [CartController::class, 'removeFromCart']);
-    Route::get('/cart/view/{userId}', [CartController::class, 'viewCartAndCalculateTotal']);
-
+    //cart
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::get('/cart/items', [CartController::class, 'show']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::get('/cart/total', [CartController::class, 'viewCartAndCalculateTotal']);
     Route::post('/cart/submit', [CartController::class, 'submitCart']);
 });
 

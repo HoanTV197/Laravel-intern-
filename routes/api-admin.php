@@ -33,6 +33,5 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthAdmin::class])->grou
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::post('/orders/{orderId}/status', [OrderController::class, 'updateStatus']);
-    Route::get('/customers', [CustomerController::class, 'index']);
 
 });

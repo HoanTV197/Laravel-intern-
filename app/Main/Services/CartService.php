@@ -1,10 +1,9 @@
-<?php 
+<?php
 
 namespace App\Main\Services;
 
 use App\Main\Repositories\CartRepository;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 
 class CartService
 {
@@ -15,33 +14,48 @@ class CartService
         $this->cartRepository = $cartRepository;
     }
 
-    public function addToCart($productId, $quantity)
+    public function getByUserId()
     {
-        $userId = Auth::id();
-        return $this->cartRepository->addToCart($userId, $productId, $quantity);
+        return $this->cartRepository->getByUserId();
     }
 
-    public function updateCartItem($productId, $quantity)
+    public function getCartItemsByUserId()
+{
+    return $this->cartRepository->getCartItemsByUserId();
+}
+
+
+    public function addToCart($data)
     {
-        $userId = Auth::id();
-        return $this->cartRepository->updateCartItem($userId, $productId, $quantity);
+        return $this->cartRepository->addToCart($data);
     }
 
-    public function removeFromCart($productId)
+    public function updateQuantity($cartId, $quantity)
     {
-        $userId = Auth::id();
-        return $this->cartRepository->removeFromCart($userId, $productId);
+        return $this->cartRepository->updateQuantity($cartId, $quantity);
     }
 
-    public function clearCart()
+    public function removeFromCart($cartId)
     {
-        $userId = Auth::id();
-        return $this->cartRepository->clearCart($userId);
+        return $this->cartRepository->removeFromCart($cartId);
     }
 
-    public function getUserCart()
+    public function clearCartForUser()
     {
-        $userId = Auth::id();
-        return $this->cartRepository->getUserCart($userId);
+        return $this->cartRepository->clearCartForUser();
+    }
+
+    public function viewCartAndCalculateTotal()
+    {
+        return $this->cartRepository->viewCartAndCalculateTotal();
+    }
+
+    public function submitCart()
+    {
+        return $this->cartRepository->submitCart();
     }
 }
+
+
+
+
