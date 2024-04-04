@@ -8,8 +8,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Auth;
 class CartController extends Controller
 
 
@@ -17,7 +16,7 @@ class CartController extends Controller
  // Thêm sản phẩm vào giỏ hàng
  public function addToCart(Request $request) {
     $cart = new Cart();
-    $cart->user_id = $request->user_id;
+    $cart->user_id = Auth::id();
     $cart->product_id = $request->product_id;
     $cart->quantity = $request->quantity;
     $cart->save();
@@ -65,7 +64,7 @@ public function viewCartAndCalculateTotal($userId) {
 
 // Submit giỏ hàng và tạo đơn hàng
 public function submitCart(Request $request) {
-    $userId = $request->user_id;
+    $userId = Auth::id();
     $cartItems = Cart::where('user_id', $userId)->get();
     
     $totalPrice = 0;

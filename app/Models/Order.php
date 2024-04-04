@@ -8,9 +8,9 @@ class Order extends Model
 {
     protected $fillable = ['total_price', 'status', 'user_id'];
 
-    public function customer()
+    public function user()
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function orderDetails()
