@@ -19,9 +19,8 @@ class CategoryController extends Controller
 
     public function index()
     {   
-        $perPage = 10;
-         return $this->baseAction(function() use ($perPage){
-            $data = $this->categoryService->getAllCategories($perPage);
+         return $this->baseAction(function(){
+            $data = $this->categoryService->getAllCategories();
             return $data;
         }, __("Get category success"), __("Get category error"));
     }

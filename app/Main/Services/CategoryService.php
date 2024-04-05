@@ -21,9 +21,9 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function getAllCategories($perPage)
+    public function getAllCategories()
     {
-        return $this->categoryRepository->paginate($perPage);
+        return $this->categoryRepository->all();
     }
 
     public function getCategoryById($id)

@@ -12,11 +12,11 @@ class ProductRepository extends BaseRepository
         return Product::class;
     }
 
-     public function paginateWithCategories($perPage = 10, $columns = ['*'])
-     {
-         
-         return $this->model->with('categories')->paginate($perPage, $columns);
-     }
+    public function getAllProducts()
+    {   
+        $perPage = 10;
+        return Product::with('categories')->paginate($perPage);
+    }
 
     public function has(string $name)
     {

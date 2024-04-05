@@ -18,9 +18,9 @@ class ProductController extends Controller
 
     public function index()
     {   
-        $perPage = 10;
-        return $this->baseAction(function () use ($perPage) {
-            $data = $this->productService->getAllProducts($perPage);
+
+        return $this->baseAction(function ()  {
+            $data = $this->productService->getAllProducts();
             return $data;
         }, __("Get product success"), __("Get product error"));
     }

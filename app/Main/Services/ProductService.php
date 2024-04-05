@@ -20,9 +20,9 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function getAllProducts($perPage = 10)
+    public function getAllProducts()
     {
-        return $this->productRepository->paginateWithCategories($perPage);
+        return $this->productRepository->getAllProducts();
     }
 
     public function getProductById($id)
