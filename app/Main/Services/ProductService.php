@@ -31,13 +31,26 @@ class ProductService
     }
     public function createProduct($data)
     {
-        return $this->productRepository->create($data);
+        $product = $this->productRepository->create($data);
+        $this->attachCategories($product, $data['categories']);
+        return $product;
+    }
+
+    public function attachCategories(Product $product, array $categories)
+    {
+        $product->categories()->sync($categories);
     }
 
     public function updateProduct($id, $data)
     {
         return $this->productRepository->updateOrCreate(['id' => $id], $data);
     }
+
+    public function updateProductCategories($id, $categoryIds)
+{
+    return $this->productRepository->updateProductCategories($id, $categoryIds);
+}
+
 
     public function deleteProduct($id)
     {

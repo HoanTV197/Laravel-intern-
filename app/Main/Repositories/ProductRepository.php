@@ -18,6 +18,17 @@ class ProductRepository extends BaseRepository
         return Product::with('categories')->paginate($perPage);
     }
 
+    public function updateProductCategories($id, $categoryIds)
+{
+    $product = $this->find($id);
+    if ($product) {
+        $product->categories()->sync($categoryIds);
+        return true;
+    }
+    return false;
+}
+
+
     public function has(string $name)
     {
         $this->has($name);

@@ -34,10 +34,14 @@ class ProductController extends Controller
     }
 
     public function store(StoreProductRequest $request)
-    {
-        return $this->baseActionTransaction(function () use ($request) {
-            $data = $this->productService->createProduct($request->validated());
-            return $data;
+    {   
+        $productData = $request->validated();
+        $categories = $request->input('categories');
+
+        return $this->baseActionTransaction(function () use ($productData, $categories) {
+            $product = $this->productService->createProduct($productData);
+            $product->categories()->sync($categories);
+            return $product;
         }, __("Create product success"), __("Create product error"));
     }
 
@@ -45,9 +49,13 @@ class ProductController extends Controller
     {
         return $this->baseActionTransaction(function () use ($request, $id) {
             $data = $this->productService->updateProduct($id, $request->validated());
+            if ($request->has('category_ids')) {
+                $this->productService->updateProductCategories($id, $request->get('category_ids'));
+            }
             return $data;
         }, __("Update product success"), __("Update product error"));
     }
+    
 
     public function destroy($id)
     {
