@@ -11,6 +11,11 @@ class StoreProductRequest extends BaseRequest
     {
         return [
             'name' => 'required|unique:products|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'image_url' => 'required',
+            'origin' => 'required',
+            'categories' => 'required|array',        
         ];
     }
     

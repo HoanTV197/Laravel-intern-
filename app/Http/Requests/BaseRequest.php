@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use function App\Main\Helpers\responseJsonFailMultipleErrors;
 class BaseRequest extends FormRequest
 {
     /**
@@ -20,7 +21,7 @@ class BaseRequest extends FormRequest
     {
         $errors = $validator->errors()->all();
         throw new HttpResponseException(
-            (new \App\Main\Helpers\Response)->responseJsonFailMultipleErrors($errors)
+            responseJsonFailMultipleErrors($errors)
         );
     }
 
