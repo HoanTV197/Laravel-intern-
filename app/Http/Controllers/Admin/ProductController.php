@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Main\Services\ProductService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -16,11 +17,12 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function index()
+    public function index(Request $request)
     {   
+        $perPage = $request->input('limit');
 
-        return $this->baseAction(function ()  {
-            $data = $this->productService->getAllProducts();
+        return $this->baseAction(function () use ($perPage){
+            $data = $this->productService->getAllProducts($perPage);
             return $data;
         }, __("Get product success"), __("Get product error"));
     }

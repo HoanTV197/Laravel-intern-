@@ -12,9 +12,9 @@ class ProductRepository extends BaseRepository
         return Product::class;
     }
 
-    public function getAllProducts()
+    public function getAllProducts($perPage)
     {   
-        $perPage = 10;
+        
         return Product::with('categories')->paginate($perPage);
     }
 
