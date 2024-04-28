@@ -14,6 +14,8 @@ class StoreProductRequest extends BaseRequest
             'description' => 'required',
             'price' => 'required|numeric',
             'origin' => 'required',
+            'categories' => 'required|array',
+            
                    
         ];
     }

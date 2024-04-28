@@ -4,6 +4,7 @@ namespace App\Main\Services;
 
 use App\Main\Repositories\OrderRepository;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -25,7 +26,7 @@ class OrderService
 
     public function getOrderById(int $id): Order
     {
-        return Order::with('user')->findOrFail($id);
+        return Order::with('user','orderDetails.product')->findOrFail($id);
     }
 
     public function updateOrderStatus(string $status, int $id): bool

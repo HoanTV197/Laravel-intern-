@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderDetail extends Model
-{
-    protected $fillable = ['order_id', 'product_id', 'quantity', 'price', 'total_price'];
+{   
+    protected $table = 'orders_detail';
+    protected $fillable = ['order_id', 'product_id', 'quantity'];
 
     public function order()
     {

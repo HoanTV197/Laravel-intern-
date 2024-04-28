@@ -4,6 +4,7 @@ namespace App\Main\Repositories;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; 
@@ -55,11 +56,31 @@ class CartRepository extends BaseRepository
 }
 
 
-    public function addToCart($data)
-    {   
-        $data['user_id'] = Auth::id();
-        return $this->model->create($data);
+public function addToCart($data)
+{   
+    $userId = Auth::id();
+    $productId = $data['product_id'];
+    $quantity = $data['quantity'];
+
+    // Tìm sản phẩm trong giỏ hàng
+    $cartItem = $this->model->where('user_id', $userId)->where('product_id', $productId)->first();
+
+    if ($cartItem) {
+        // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
+        $cartItem->quantity += $quantity;
+        $cartItem->save();
+    } else {
+        // Nếu sản phẩm chưa tồn tại trong giỏ hàng, tạo một mục giỏ hàng mới
+        $cartItem = $this->model->create([
+            'user_id' => $userId,
+            'product_id' => $productId,
+            'quantity' => $quantity,
+        ]);
     }
+
+    return $cartItem;
+}
+
 
     
     public function updateQuantity($cartId, $quantity)
@@ -113,28 +134,54 @@ class CartRepository extends BaseRepository
         $userId = Auth::id();
         return DB::transaction(function () use ($userId) {
             $cartItems = $this->getByUserId();
-
+            // dd($cartItems);
+    
             if ($cartItems->isEmpty()) {
                 return null;
             }
-
+    
             $totalPrice = 0;
             foreach ($cartItems as $item) {
                 $product = Product::find($item->product_id);
                 $totalPrice += $product->price * $item->quantity;
             }
-
+    
             $order = new Order();
             $order->user_id = $userId;
             $order->order_date = now();
             $order->total_price = $totalPrice;
-            $order->status = 'pending';
+            $order->status = '4';
             $order->save();
 
+            // dd($order);
+            $oderDetail = [];
+            for ($i = 0; $i < count($cartItems); $i++){
+                $oderDetail[$i] = new OrderDetail;
+                $oderDetail[$i]->order_id = $order->id;
+                $oderDetail[$i]->product_id = $cartItems[$i]->product_id;
+                $oderDetail[$i]->quantity = $cartItems[$i]->quantity;
+                // $oderDetail[$i]->save();
+                try {
+                    $oderDetail[$i]->save();
+                } catch (\Exception $e) {
+                    dd($e->getMessage());
+                }
+                
+            
+                
+
+            }
+            // dd($oderDetail);
+                
+            
+        
+    
             // Clear the cart after placing the order
             $this->clearCartForUser();
-
+    
             return $order;
-        });
+        });   
     }
+   
+
 }
