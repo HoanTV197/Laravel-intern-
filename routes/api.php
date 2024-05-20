@@ -37,5 +37,3 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthUser::class])->group
 // products-user
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-
-Route::post('/orders/submit', [OrderController::class, 'submitOrder']);
