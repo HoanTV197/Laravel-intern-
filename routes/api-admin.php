@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ArticleController;
 
 Route::post('/auth/login', [AuthAdminController::class, 'login']);
 Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthAdmin::class])->group(function () {
@@ -31,5 +32,12 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\AuthAdmin::class])->grou
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::post('/orders/status/{id}', [OrderController::class, 'updateStatus']);
+
+    //Articles
+    Route::get('/articles', [ArticleController::class, 'index']);
+    Route::get('/articles/{id}', [ArticleController::class, 'show']);
+    Route::post('/articles', [ArticleController::class, 'store']);
+    Route::put('/articles/{id}', [ArticleController::class, 'update']);
+    Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
 
 });
